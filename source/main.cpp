@@ -1,4 +1,4 @@
-//#pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
+#pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
 #include <SFML/Graphics.hpp>
 #include <fstream>
 #include <iostream>
@@ -7,7 +7,7 @@
 constexpr int window_width = 832, window_height = 832;
 constexpr int one_square_size = window_width / 8;
 constexpr int one_piece_size = 42;
-constexpr float scale = one_square_size * 0.9 / one_piece_size;
+constexpr float scale = one_square_size * 0.9f / one_piece_size;
 constexpr float x_offset = one_square_size * 0.1 / 2;
 constexpr float y_offset = one_square_size * 0.1 / 2;
 sf::RenderWindow window(sf::VideoMode(window_width, window_height), "Chess Puzzles", sf::Style::Titlebar | sf::Style::Close);
@@ -50,7 +50,7 @@ void render_sprite_at_pos(sf::Sprite& sprite, int x, int y) {
 }
 
 int main() {
-	int tile_position_1 = -1, tile_position_2 = -1, i = 0, x, y, saved_piece, counter_of_moves = 0;
+	int square_1 = -1, square_2 = -1, i = 0, x, y, saved_piece, counter_of_moves = 0;
 	bool first_move = true, correct_move = true;
 	sf::Vector2i mouse_pos;
 	sf::Event event;
@@ -115,16 +115,15 @@ int main() {
 	king_wh.setScale(sf::Vector2f(scale, scale));
 	chess_board.setScale(sf::Vector2f((float)window_width / chess_board_texture.getSize().x, (float)window_height / chess_board_texture.getSize().y));
 
-
 	load_level(counter_of_level);  
 	load_level_answers(counter_of_level);
 
 	while (window.isOpen()) { 
 		
-		if (tile_position_1 != -1 && tile_position_2 != -1) {
+		if (square_1 != -1 && square_2 != -1) {
 			if (!correct_move) {
-				board[tile_position_1] = board[tile_position_2];
-				board[tile_position_2] = saved_piece;
+				board[square_1] = board[square_2];
+				board[square_2] = saved_piece;
 				Sleep(400);
 				goto reset_tiles;
 			}
@@ -133,7 +132,6 @@ int main() {
 				counter_of_level++;
 				answers.clear();
 				counter_of_moves = 0;
-				std::cout << "NEW LEVEL\n";
 				load_level(counter_of_level);
 				load_level_answers(counter_of_level);
 				goto reset_tiles;
@@ -142,8 +140,8 @@ int main() {
 			board[answers[4 * counter_of_moves + 2]] = 0;
 			counter_of_moves++;
 			reset_tiles:
-				tile_position_1 = -1;
-				tile_position_2 = -1;
+				square_1 = -1;
+				square_2 = -1;
 
 		}
 
@@ -155,24 +153,22 @@ int main() {
 
 			else if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left && first_move) {
 				mouse_pos = sf::Mouse::getPosition(window);
-				tile_position_1 = (mouse_pos.x / one_square_size) + (mouse_pos.y / one_square_size) * 8;
-				std::cout << tile_position_1 << '\n';
+				square_1 = (mouse_pos.x / one_square_size) + (mouse_pos.y / one_square_size) * 8;
 				first_move = false;
 			}
 
 			else if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left && !first_move) {
 				mouse_pos = sf::Mouse::getPosition(window);
-				tile_position_2 = (mouse_pos.x / one_square_size) + (mouse_pos.y / one_square_size) * 8;
-				std::cout << tile_position_2 << '\n';
+				square_2 = (mouse_pos.x / one_square_size) + (mouse_pos.y / one_square_size) * 8;
 				first_move = true;
 			}
 		}
 		
-		if (tile_position_1 != -1 && tile_position_2 != -1) {
-			saved_piece = board[tile_position_2];
-			board[tile_position_2] = board[tile_position_1];
-			board[tile_position_1] = 0;
-			correct_move = tile_position_1 == answers[counter_of_moves * 4] && tile_position_2 == answers[counter_of_moves * 4 + 1];
+		if (square_1 != -1 && square_2 != -1) {
+			saved_piece = board[square_2];
+			board[square_2] = board[square_1];
+			board[square_1] = 0;
+			correct_move = square_1 == answers[counter_of_moves * 4] && square_2 == answers[counter_of_moves * 4 + 1];
 		}
 
 		window.clear();

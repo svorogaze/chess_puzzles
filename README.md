@@ -1,5 +1,5 @@
-# chess_puzzles
-Simple chess puzzles
+# Chess Puzzles
+Simple chess puzzles made with sfml
 
 # how to compile
 Compile only with Release x86.

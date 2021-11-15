@@ -2,18 +2,16 @@
 #include <SFML/Graphics.hpp>
 #include <fstream>
 #include <iostream>
-#include <Windows.h>
 
 constexpr int window_width = 832, window_height = 832;
 constexpr int one_square_size = window_width / 8;
 constexpr int one_piece_size = 42;
 constexpr float scale = one_square_size * 0.9f / one_piece_size;
-constexpr float x_offset = one_square_size * 0.1 / 2;
-constexpr float y_offset = one_square_size * 0.1 / 2;
+constexpr float x_offset = one_square_size * 0.1f / 2.f;
+constexpr float y_offset = one_square_size * 0.1f / 2.f;
 sf::RenderWindow window(sf::VideoMode(window_width, window_height), "Chess Puzzles", sf::Style::Titlebar | sf::Style::Close);
 
 int board[64];
-int counter_of_level = 1;
 std::vector <int> answers;
 
 void load_level(int number_of_level) {
@@ -50,8 +48,9 @@ void render_sprite_at_pos(sf::Sprite& sprite, int x, int y) {
 }
 
 int main() {
-	int square_1 = -1, square_2 = -1, i = 0, x, y, saved_piece, counter_of_moves = 0;
+	int square_1 = -1, square_2 = -1, i = 0, x, y, saved_piece, counter_of_moves = 0,counter_of_level = 1;
 	bool first_move = true, correct_move = true;
+	sf::Time time_to_sleep;
 	sf::Vector2i mouse_pos;
 	sf::Event event;
 	sf::Image icon;
@@ -124,10 +123,12 @@ int main() {
 			if (!correct_move) {
 				board[square_1] = board[square_2];
 				board[square_2] = saved_piece;
-				Sleep(400);
+				time_to_sleep = sf::milliseconds(400);
+				sf::sleep(time_to_sleep);
 				goto reset_tiles;
 			}
-			Sleep(300);
+			time_to_sleep = sf::milliseconds(400);
+			sf::sleep(time_to_sleep);
 			if ((counter_of_moves + 1) * 4 > answers.size() - 1) {
 				counter_of_level++;
 				answers.clear();
